@@ -119,7 +119,3 @@ This project currently does not depend on external npm libraries.
 - This project is designed as a local/self-hosted app
 - Authentication is frontend-local right now, not production-grade server auth
 - Data is stored locally in JSON for simplicity and easy setup
-
-## License
-
-Add your preferred license before wider distribution if needed.
