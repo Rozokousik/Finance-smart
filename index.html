@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1020">
+  <title>Finace Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body data-theme="dark">
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar-brand">
+        <div class="toolbar-menu">
+          <button class="toolbar-toggle" id="toolbar-toggle" type="button" aria-label="Open tools">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <div class="toolbar-dropdown hidden" id="toolbar-dropdown">
+            <button class="secondary-btn toolbar-action" id="toolbar-workspace" type="button">Workspace</button>
+            <button class="secondary-btn toolbar-action" id="toolbar-data" type="button">Data Visualization</button>
+            <button class="secondary-btn toolbar-action" id="toolbar-settings" type="button">Settings</button>
+          </div>
+        </div>
+        <div>
+          <p class="eyebrow">Adaptive Finance Workspace</p>
+          <h1>Finace Dashboard</h1>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <label class="theme-switcher" for="theme-select">
+          <span>Theme</span>
+          <select id="theme-select" aria-label="Theme selector">
+            <option value="light">Light</option>
+            <option value="dark" selected>Dark</option>
+            <option value="high-contrast">Dark High Contrast</option>
+            <option value="tomorrow-night-blue">Tomorrow Night Blue</option>
+          </select>
+        </label>
+        <div class="share-menu">
+          <button class="secondary-btn" id="share-toggle" type="button">Share</button>
+          <div class="share-dropdown hidden" id="share-dropdown">
+            <p class="share-title" id="share-note-title">Open a note to share it</p>
+            <p class="share-code-preview" id="share-note-code">Select a note to see its code</p>
+            <button class="secondary-btn share-action" id="copy-note-code" type="button">Copy Note Code</button>
+            <button class="secondary-btn share-action" id="copy-note-link" type="button">Copy Note Link</button>
+            <button class="secondary-btn share-action" id="export-note-csv" type="button">Export CSV</button>
+            <div class="share-access-list" id="share-access-list"></div>
+            <p class="form-status" id="share-status" aria-live="polite"></p>
+          </div>
+        </div>
+        <div class="share-menu">
+          <button class="secondary-btn" id="access-toggle" type="button">Enter Note</button>
+          <div class="share-dropdown hidden access-dropdown" id="access-dropdown">
+            <div class="access-block">
+              <p class="share-title">Paste a note code</p>
+              <form id="access-request-form" class="access-request-form" novalidate>
+                <input id="access-code" name="code" type="text" placeholder="Paste note code">
+                <select id="access-level" name="accessType">
+                  <option value="view">View access</option>
+                  <option value="edit">Edit access</option>
+                </select>
+                <button class="secondary-btn share-action" type="submit">Request Access</button>
+              </form>
+              <p class="form-status" id="access-status" aria-live="polite"></p>
+            </div>
+            <div class="access-block">
+              <p class="share-title">Incoming approvals</p>
+              <div class="access-request-list" id="access-request-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-grid">
+      <section class="auth-stage" id="auth-stage">
+        <div class="hero-panel">
+          <div class="hero-copy">
+            <h2>Secure entry, smooth motion, and responsive finance controls.</h2>
+            <p class="hero-text">
+              Money stays clearer with privacy. Account, cash flow, and risk details are hidden
+              until you log in, so the first screen shows only time, date, and a short finance reminder.
+            </p>
+          </div>
+
+          <div class="hero-info">
+            <article class="info-card">
+              <span>Current Time</span>
+              <strong id="live-time">--:--:--</strong>
+              <small id="live-date">Loading date</small>
+            </article>
+            <article class="info-card quote-card">
+              <strong id="money-quote">Never lose money.</strong>
+              <small id="money-quote-author">Warren Buffett</small>
+            </article>
+          </div>
+        </div>
+
+        <div class="auth-card">
+          <div class="tabs" role="tablist" aria-label="Authentication">
+            <button class="tab is-active" id="login-tab" data-tab="login" role="tab" aria-selected="true">Login</button>
+            <button class="tab" id="register-tab" data-tab="register" role="tab" aria-selected="false">Create User</button>
+          </div>
+
+          <section class="panel is-active" id="login-panel" role="tabpanel" aria-labelledby="login-tab">
+            <div class="panel-heading">
+              <h3>Welcome back</h3>
+              <p>Sign in using your existing user ID and password.</p>
+            </div>
+
+            <form id="login-form" novalidate>
+              <div class="field">
+                <label for="login-userid">User ID</label>
+                <input id="login-userid" name="userId" type="text" minlength="8" placeholder="Enter user ID" required>
+                <small class="error" data-error-for="login-userid"></small>
+              </div>
+
+              <div class="field">
+                <label for="login-password">Password</label>
+                <input id="login-password" name="password" type="password" minlength="8" placeholder="Enter password" required>
+                <small class="error" data-error-for="login-password"></small>
+              </div>
+
+              <button class="primary-btn" type="submit">Login</button>
+              <p class="form-status" id="login-status" aria-live="polite"></p>
+            </form>
+          </section>
+
+          <section class="panel" id="register-panel" role="tabpanel" aria-labelledby="register-tab">
+            <div class="panel-heading">
+              <h3>Create your user</h3>
+              <p>Create a new account with validated details and secure credentials.</p>
+            </div>
+
+            <form id="register-form" novalidate>
+              <div class="field">
+                <label for="register-userid">User ID</label>
+                <input id="register-userid" name="userId" type="text" minlength="8" placeholder="Minimum 8 characters" required>
+                <small class="error" data-error-for="register-userid"></small>
+              </div>
+
+              <div class="field">
+                <label for="register-password">Password</label>
+                <input id="register-password" name="password" type="password" minlength="8" placeholder="Use uppercase, lowercase, special character" required>
+                <small class="error" data-error-for="register-password"></small>
+              </div>
+
+              <div class="field">
+                <label for="register-confirm-password">Confirm Password</label>
+                <input id="register-confirm-password" name="confirmPassword" type="password" minlength="8" placeholder="Re-enter password" required>
+                <small class="error" data-error-for="register-confirm-password"></small>
+              </div>
+
+              <div class="two-column">
+                <div class="field">
+                  <label for="register-dob-day">Date of Birth</label>
+                  <div class="dob-grid">
+                    <select id="register-dob-day" name="dobDay" required>
+                      <option value="">Day</option>
+                    </select>
+                    <select id="register-dob-month" name="dobMonth" required>
+                      <option value="">Month</option>
+                      <option value="01">Jan</option>
+                      <option value="02">Feb</option>
+                      <option value="03">Mar</option>
+                      <option value="04">Apr</option>
+                      <option value="05">May</option>
+                      <option value="06">Jun</option>
+                      <option value="07">Jul</option>
+                      <option value="08">Aug</option>
+                      <option value="09">Sep</option>
+                      <option value="10">Oct</option>
+                      <option value="11">Nov</option>
+                      <option value="12">Dec</option>
+                    </select>
+                    <select id="register-dob-year" name="dobYear" required>
+                      <option value="">Year</option>
+                    </select>
+                  </div>
+                  <small class="error" data-error-for="register-dob"></small>
+                </div>
+
+                <div class="field">
+                  <label for="register-email">Email ID</label>
+                  <input id="register-email" name="email" type="email" placeholder="name@example.com" required>
+                  <small class="error" data-error-for="register-email"></small>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="register-phone">Phone Number</label>
+                <input id="register-phone" name="phone" type="tel" placeholder="+91 9876543210" required>
+                <small class="error" data-error-for="register-phone"></small>
+              </div>
+
+              <button class="primary-btn" type="submit">Create User</button>
+              <p class="form-status" id="register-status" aria-live="polite"></p>
+            </form>
+          </section>
+        </div>
+      </section>
+
+      <section class="dashboard-shell hidden" id="dashboard-shell" aria-labelledby="dashboard-title">
+        <div class="dashboard-header">
+          <div>
+            <p class="eyebrow">Finance overview</p>
+            <h2 id="dashboard-title">Choose or create a note first.</h2>
+          </div>
+          <button class="secondary-btn" id="logout-btn" type="button">Logout</button>
+        </div>
+
+        <div class="dashboard-layout page-view is-active" id="notes-page">
+          <section class="surface surface-wide">
+            <div class="surface-header">
+              <h3>Notes Workspace</h3>
+              <span class="panel-pill" id="active-note-badge">No note selected</span>
+            </div>
+            <div class="note-workspace">
+              <form id="note-form" class="note-form" novalidate>
+                <div class="two-column">
+                  <div class="field">
+                    <label for="note-title">Create New Note</label>
+                    <input id="note-title" name="title" type="text" maxlength="80" placeholder="Example: April household budget">
+                    <small class="error" data-error-for="note-title"></small>
+                  </div>
+                  <div class="field">
+                    <label for="note-description">Note Description</label>
+                    <input id="note-description" name="description" type="text" maxlength="140" placeholder="Optional note purpose or context">
+                    <small class="error" data-error-for="note-description"></small>
+                  </div>
+                </div>
+                <button class="primary-btn" type="submit">Create Note</button>
+                <p class="form-status" id="note-status" aria-live="polite"></p>
+              </form>
+              <div class="search-shell">
+                <label for="note-search">Search Notes</label>
+                <input id="note-search" type="text" placeholder="Search by title or note words">
+              </div>
+              <div class="note-list" id="note-list"></div>
+            </div>
+          </section>
+        </div>
+
+        <div class="dashboard-layout page-view" id="transactions-page">
+          <section class="surface surface-large">
+            <div class="surface-header">
+              <h3>Create Transaction / Note</h3>
+              <div class="workspace-actions">
+                <button class="secondary-btn" id="back-to-notes" type="button">Notes</button>
+                <span id="active-user-badge">User</span>
+              </div>
+            </div>
+            <p class="surface-note composer-helper" id="composer-helper">
+              Create a note or open one of your existing notes to start adding transactions.
+            </p>
+            <form id="transaction-form" class="transaction-form" novalidate>
+              <div class="two-column">
+                <div class="field">
+                  <label for="transaction-type">Type</label>
+                  <select id="transaction-type" name="type" required>
+                    <option value="">Select type</option>
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                    <option value="savings">Savings</option>
+                    <option value="investment">Investment</option>
+                  </select>
+                  <small class="error" data-error-for="transaction-type"></small>
+                </div>
+
+                <div class="field">
+                  <label for="transaction-amount">Amount (INR)</label>
+                  <input id="transaction-amount" name="amount" type="number" step="0.01" min="0" placeholder="Enter amount in INR" required>
+                  <small class="error" data-error-for="transaction-amount"></small>
+                </div>
+              </div>
+
+              <div class="two-column">
+                <div class="field">
+                  <label>Date & Time</label>
+                  <div class="datetime-stack">
+                    <div class="datetime-group">
+                      <span class="datetime-label">Date</span>
+                      <div class="datetime-grid datetime-grid-date">
+                        <select id="transaction-day" name="occurredDay" required>
+                          <option value="">Day</option>
+                        </select>
+                        <select id="transaction-month" name="occurredMonth" required>
+                          <option value="">Month</option>
+                          <option value="01">Jan</option>
+                          <option value="02">Feb</option>
+                          <option value="03">Mar</option>
+                          <option value="04">Apr</option>
+                          <option value="05">May</option>
+                          <option value="06">Jun</option>
+                          <option value="07">Jul</option>
+                          <option value="08">Aug</option>
+                          <option value="09">Sep</option>
+                          <option value="10">Oct</option>
+                          <option value="11">Nov</option>
+                          <option value="12">Dec</option>
+                        </select>
+                        <select id="transaction-year" name="occurredYear" required>
+                          <option value="">Year</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="datetime-group">
+                      <span class="datetime-label">Time</span>
+                      <div class="datetime-grid datetime-grid-time">
+                        <select id="transaction-hour" name="occurredHour" required>
+                          <option value="">Hour</option>
+                        </select>
+                        <select id="transaction-minute" name="occurredMinute" required>
+                          <option value="">Minute</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <small class="error" data-error-for="transaction-datetime"></small>
+                </div>
+
+                <div class="field">
+                  <label for="transaction-notes">Notes</label>
+                  <textarea id="transaction-notes" name="notes" rows="3" placeholder="Optional note about this entry"></textarea>
+                  <small class="error" data-error-for="transaction-notes"></small>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="tag-input">Tags</label>
+                <div class="tag-input-shell">
+                  <div class="tag-chip-list" id="selected-tags"></div>
+                  <div class="tag-input-row">
+                    <input id="tag-input" type="text" placeholder="Add or create tags">
+                    <button class="secondary-btn chip-action" id="add-tag-btn" type="button">Add Tag</button>
+                  </div>
+                </div>
+                <div class="tag-suggestions" id="tag-suggestions"></div>
+                <small class="error" data-error-for="transaction-tags"></small>
+              </div>
+
+              <div class="field">
+                <label for="transaction-attachments">Attachments</label>
+                <input id="transaction-attachments" name="attachments" type="file" multiple accept=".png,.jpg,.jpeg,.webp,.pdf,.xls,.xlsx,.csv,.txt,.doc,.docx">
+                <div class="attachment-preview-list" id="attachment-preview-list"></div>
+                <small class="error" data-error-for="transaction-attachments"></small>
+              </div>
+
+              <section class="interest-panel hidden" id="interest-panel">
+                <div class="surface-header">
+                  <h3>Interest Details</h3>
+                  <span class="panel-pill">Savings / Investment only</span>
+                </div>
+                <div class="two-column">
+                  <div class="field">
+                    <label for="interest-rate">Interest Rate (%)</label>
+                    <input id="interest-rate" name="interestRate" type="number" step="0.01" min="0" placeholder="Example 7.5">
+                    <small class="error" data-error-for="interest-rate"></small>
+                  </div>
+
+                  <div class="field">
+                    <label for="interest-type">Interest Type</label>
+                    <select id="interest-type" name="interestType">
+                      <option value="none">None</option>
+                      <option value="simple">Simple</option>
+                      <option value="compound">Compound</option>
+                      <option value="custom">Custom</option>
+                    </select>
+                    <small class="error" data-error-for="interest-type"></small>
+                  </div>
+                </div>
+
+                <div class="field hidden" id="custom-formula-field">
+                  <label for="custom-formula">Custom Formula</label>
+                  <textarea id="custom-formula" name="customFormula" rows="3" placeholder="Optional custom formula or rules"></textarea>
+                  <small class="error" data-error-for="custom-formula"></small>
+                </div>
+
+                <p class="surface-note" id="interest-preview">Projected return will use a 1-year estimate for simple and compound interest.</p>
+              </section>
+
+              <button class="primary-btn" type="submit">Save Transaction</button>
+              <p class="form-status" id="transaction-status" aria-live="polite"></p>
+            </form>
+          </section>
+
+          <section class="surface">
+            <div class="surface-header">
+              <h3>Transaction Summary</h3>
+            </div>
+            <ul class="stat-list" id="summary-list">
+              <li><span>Total entries</span><strong id="summary-total">0</strong></li>
+              <li><span>Last saved</span><strong id="summary-last-saved">None</strong></li>
+            </ul>
+            <p class="surface-note" id="summary-helper">Create your first note to unlock transactions.</p>
+          </section>
+
+          <section class="surface surface-wide">
+            <div class="surface-header">
+              <h3>Recent Transactions</h3>
+              <button class="secondary-btn" id="toggle-transaction-filters" type="button">Search & Filter</button>
+            </div>
+            <div class="filter-shell hidden" id="transaction-filter-panel">
+              <div class="filter-grid">
+                <input id="transaction-search" type="text" placeholder="Search notes, tags, or transaction words">
+                <select id="filter-type">
+                  <option value="">All types</option>
+                  <option value="income">Income</option>
+                  <option value="expense">Expense</option>
+                  <option value="savings">Savings</option>
+                  <option value="investment">Investment</option>
+                </select>
+                <input id="filter-tag" type="text" placeholder="Filter by tag">
+                <input id="filter-date" type="date">
+                <select id="filter-hour">
+                  <option value="">Any hour</option>
+                </select>
+                <select id="transaction-sort">
+                  <option value="newest">Newest first</option>
+                  <option value="oldest">Oldest first</option>
+                  <option value="amount-high">Amount high to low</option>
+                  <option value="amount-low">Amount low to high</option>
+                </select>
+              </div>
+            </div>
+            <div class="transaction-list" id="transaction-list"></div>
+          </section>
+        </div>
+
+        <div class="dashboard-layout page-view" id="data-page">
+          <section class="surface surface-wide">
+            <div class="surface-header">
+              <h3>Data Visualization</h3>
+              <span class="panel-pill" id="data-visualization-context">All notes</span>
+            </div>
+            <p class="surface-note">A quick visual breakdown of your tracked finance activity.</p>
+            <div class="viz-stat-grid" id="viz-stat-grid"></div>
+          </section>
+          <section class="surface surface-wide">
+            <div class="surface-header">
+              <h3>Type Breakdown</h3>
+            </div>
+            <div class="viz-bars" id="viz-bars"></div>
+          </section>
+          <section class="surface">
+            <div class="surface-header">
+              <h3>Top Tags</h3>
+            </div>
+            <div class="tag-suggestions" id="viz-tags"></div>
+          </section>
+          <section class="surface surface-wide viz-builder-surface">
+            <div class="surface-header">
+              <h3>Custom Visualization</h3>
+              <span class="panel-pill">Entire timeline by default</span>
+            </div>
+            <div class="viz-builder-grid">
+              <div class="field">
+                <label for="viz-chart-type">Chart Type</label>
+                <select id="viz-chart-type">
+                  <option value="pie">Pie Chart</option>
+                  <option value="histogram">Histogram</option>
+                  <option value="scatter">Scatterplot</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="viz-x-field">X Axis / Category</label>
+                <select id="viz-x-field">
+                  <option value="type">Transaction Type</option>
+                  <option value="month">Month</option>
+                  <option value="day">Day</option>
+                  <option value="note">Note</option>
+                  <option value="creator">Created By</option>
+                  <option value="tag-count">Tag Count</option>
+                  <option value="amount">Amount</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="viz-y-field">Y Axis / Value</label>
+                <select id="viz-y-field">
+                  <option value="amount">Amount</option>
+                  <option value="count">Count</option>
+                  <option value="expected-return">Expected Return</option>
+                  <option value="final-amount">Final Amount</option>
+                  <option value="tag-count">Tag Count</option>
+                </select>
+              </div>
+              <div class="field hidden" id="viz-z-field-wrap">
+                <label for="viz-z-field">Z Axis / Depth</label>
+                <select id="viz-z-field">
+                  <option value="note">Note</option>
+                  <option value="creator">Created By</option>
+                  <option value="month">Month</option>
+                  <option value="day">Day</option>
+                  <option value="type">Transaction Type</option>
+                  <option value="tag-count">Tag Count</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="viz-start-date">Timeline Start</label>
+                <input id="viz-start-date" type="date">
+              </div>
+              <div class="field">
+                <label for="viz-end-date">Timeline End</label>
+                <input id="viz-end-date" type="date">
+              </div>
+              <div class="field">
+                <label>&nbsp;</label>
+                <button class="secondary-btn" id="viz-reset-range" type="button">Use Entire Timeline</button>
+              </div>
+            </div>
+            <p class="surface-note" id="viz-builder-summary">Showing the full timeline for the current workspace.</p>
+          </section>
+          <section class="surface surface-wide viz-output-surface">
+            <div class="surface-header">
+              <h3 id="viz-custom-title">Pie Chart</h3>
+              <div class="surface-header-actions">
+                <span class="panel-pill" id="viz-custom-context">Custom view</span>
+                <button class="secondary-btn viz-download-btn" id="viz-download-btn" type="button">Download Chart</button>
+              </div>
+            </div>
+            <div class="viz-canvas" id="viz-custom-canvas"></div>
+          </section>
+        </div>
+
+        <div class="dashboard-layout page-view" id="settings-page">
+          <section class="surface surface-wide">
+            <div class="surface-header">
+              <h3>Settings</h3>
+              <span class="panel-pill" id="settings-user">User</span>
+            </div>
+            <div class="settings-grid">
+              <div class="detail-block">
+                <span>Current Theme</span>
+                <strong id="settings-theme">Dark</strong>
+                <small>Change it anytime from the top-right theme selector.</small>
+              </div>
+              <div class="detail-block">
+                <span>Visible Notes</span>
+                <strong id="settings-note-count">0</strong>
+                <small>Includes owned notes and approved shared notes.</small>
+              </div>
+              <div class="detail-block">
+                <span>Pending Approvals</span>
+                <strong id="settings-request-count">0</strong>
+                <small>Incoming note access requests for notes you own.</small>
+              </div>
+              <div class="detail-block">
+                <span>Navigation</span>
+                <strong>Browser history enabled</strong>
+                <small>Back and forward will now move between workspace, data, and settings.</small>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="transaction-modal" id="transaction-modal">
+    <div class="transaction-modal-card">
+      <div class="surface-header">
+        <h3 id="transaction-modal-title">Transaction Details</h3>
+        <button class="secondary-btn modal-close-btn" id="close-transaction-modal" type="button">Close</button>
+      </div>
+      <div class="transaction-modal-content" id="transaction-modal-content"></div>
+    </div>
+  </dialog>
+
+  <script src="./script.js"></script>
+</body>
+</html>

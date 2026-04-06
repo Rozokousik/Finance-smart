@@ -1,0 +1,9 @@
+{
+  "name": "finace-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Finance dashboard with auth and transaction creation",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
